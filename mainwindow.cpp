@@ -52,7 +52,9 @@ void MainWindow::on_pushButton_3_clicked()
         QProcess *appProcess = new QProcess();
             appProcess->setStandardOutputFile("Результат.txt");
             appProcess->setProcessChannelMode(QProcess::MergedChannels);
-            connect(appProcess, &QProcess::started, [appProcess]() {
+            connect(appProcess, &QProcess::started, [appProcess, this]() {
+                ui->pushButton_3->setDisabled(true);
+                QMessageBox::information(this, "Ожидайте", "Процесс рассчета запущен\nПосле завершения отобразится соответствующее окно.\nВ процессе рассчета приложение может не отвечать.");
                 qDebug() << "Started!";
                 qDebug() << "PID: " << appProcess->processId();
                 qDebug() << "Process state: " << appProcess->state();
@@ -65,6 +67,7 @@ void MainWindow::on_pushButton_3_clicked()
                 } else {
                     QMessageBox::critical(this, "Ошибка", "При создании распределения произошла ошибка.\nОписание сохранено в файл.");
                 }
+                ui->pushButton_3->setEnabled(true);
                 appProcess->deleteLater(); //clear the QProcess object
             });
             params << "--form" << this->file_1 << "--profiles" << this->file_2 << "--n_best" << QString::number(this->n_best) << "--n_gen" << QString::number(this->n_gen);
